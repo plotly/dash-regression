@@ -11,13 +11,6 @@ def _omit(omitted_keys, d):
     return {k: v for k, v in d.items() if k not in omitted_keys}
 
 
-def FormattedSlider(**kwargs):
-    return html.Div(
-        style=kwargs.get('style', {}),
-        children=dcc.Slider(**_omit(['style'], kwargs))
-    )
-
-
 def NamedSlider(name, **kwargs):
     return html.Div(
         style={'padding': '20px 10px 25px 4px'},
@@ -34,15 +27,5 @@ def NamedDropdown(name, **kwargs):
         children=[
             html.P(f'{name}:', style={'margin-left': '3px'}),
             dcc.Dropdown(**kwargs)
-        ]
-    )
-
-
-def NamedRadioItems(name, **kwargs):
-    return html.Div(
-        style={'padding': '20px 10px 25px 4px'},
-        children=[
-            html.P(f'{name}:'),
-            dcc.RadioItems(**kwargs)
         ]
     )

@@ -5,15 +5,16 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
 import numpy as np
-from plotly import tools
 from sklearn.datasets import make_regression, load_boston
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import LinearRegression, Lasso, Ridge, ElasticNet
-from sklearn.preprocessing import PolynomialFeatures, StandardScaler
-from dash.dependencies import Input, Output, State
+from sklearn.preprocessing import PolynomialFeatures
+from dash.dependencies import Input, Output
 
 import dash_reusable_components as drc
+
+RANDOM_STATE = 718
 
 app = dash.Dash(__name__)
 server = app.server
@@ -30,10 +31,7 @@ app.layout = html.Div([
     html.Div(className="banner", children=[
         html.Div(className='container scalable', children=[
             html.H2('Regression Explorer'),
-
-            html.Img(
-                src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"
-            )
+            html.Img(src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png")
         ]),
     ]),
 
@@ -43,9 +41,12 @@ app.layout = html.Div([
                 name='Select Dataset',
                 id='dropdown-dataset',
                 options=[
-                    {'label': 'Linear', 'value': 'linear'},
+                    {'label': 'Arctan Curve', 'value': 'tanh'},
+                    {'label': 'Boston (LSTAT Attribute)', 'value': 'boston'},
+                    {'label': 'Exponential Curve', 'value': 'exp'},
+                    {'label': 'Linear Curve', 'value': 'linear'},
+                    {'label': 'Log Curve', 'value': 'log'},
                     {'label': 'Sine Curve', 'value': 'sin'},
-                    {'label': 'Boston', 'value': 'boston'}
                 ],
                 value='linear',
                 clearable=False,
@@ -102,36 +103,45 @@ app.layout = html.Div([
                     step=0.05,
                     value=0.5,
                     marks={0: 'L1', 1: 'L2'}
-                )),
+                )
+            ),
         ]),
 
-        html.Div(
-            children=dcc.Graph(
-                id='graph-regression-display',
-                className='row',
-                style={'height': 'calc(100vh - 205px)'},
-            )
-        )
+        dcc.Graph(
+            id='graph-regression-display',
+            className='row',
+            style={'height': 'calc(100vh - 205px)'},
+        ),
     ])
 ])
 
 
-def make_dataset(name):
-    if name == 'sin':
-        X = np.linspace(-np.pi, np.pi, 300)
-        noise = np.random.normal(0, 0.1, X.shape)
-        y = np.sin(X) + noise
+def make_dataset(name, random_state):
+    np.random.seed(random_state)
+
+    if name in ['sin', 'log', 'exp', 'tanh']:
+        if name == 'sin':
+            X = np.linspace(-np.pi, np.pi, 300)
+            y = np.sin(X) + np.random.normal(0, 0.15, X.shape)
+        elif name == 'log':
+            X = np.linspace(0.1, 10, 300)
+            y = np.log(X) + np.random.normal(0, 0.25, X.shape)
+        elif name == 'exp':
+            X = np.linspace(0, 3, 300)
+            y = np.exp(X) + np.random.normal(0, 1, X.shape)
+        elif name == 'tanh':
+            X = np.linspace(-np.pi, np.pi, 300)
+            y = np.tanh(X) + np.random.normal(0, 0.15, X.shape)
         return X.reshape(-1, 1), y
 
     elif name == 'boston':
-        boston = load_boston()
-        X = boston.data[:, -1].reshape(-1, 1)
-        y = boston.target
+        X = load_boston().data[:, -1].reshape(-1, 1)
+        y = load_boston().target
         return X, y
 
     else:
         return make_regression(n_samples=300, n_features=1, noise=20,
-                               random_state=718)
+                               random_state=random_state)
 
 
 @app.callback(Output('slider-alpha', 'disabled'),
@@ -142,7 +152,7 @@ def disable_slider_alpha(dataset):
 
 @app.callback(Output('slider-l1-l2-ratio', 'disabled'),
               [Input('dropdown-select-model', 'value')])
-def disable_slider_alpha(dataset):
+def disable_dropdown_select_model(dataset):
     return dataset not in ['elastic_net']
 
 
@@ -153,14 +163,11 @@ def disable_slider_alpha(dataset):
                Input('dropdown-select-model', 'value'),
                Input('slider-l1-l2-ratio', 'value')])
 def update_graph(dataset, degree, alpha_power, model_name, l2_ratio):
-    random_state = 718
-    alpha = 10 ** alpha_power
-
     # Generate base data
-    X, y = make_dataset(dataset)
+    X, y = make_dataset(dataset, RANDOM_STATE)
     X_train, X_test, y_train, y_test = \
-        train_test_split(X, y, test_size=100, random_state=random_state)
-    X_range = np.arange(X.min() - 0.5, X.max() + 0.5, 0.2).reshape(-1, 1)
+        train_test_split(X, y, test_size=100, random_state=RANDOM_STATE)
+    X_range = np.linspace(X.min() - 0.5, X.max() + 0.5, 300).reshape(-1, 1)
 
     # Create Polynomial Features
     poly = PolynomialFeatures(degree=degree)
@@ -169,6 +176,7 @@ def update_graph(dataset, degree, alpha_power, model_name, l2_ratio):
     poly_range = poly.fit_transform(X_range)
 
     # Select model
+    alpha = 10 ** alpha_power
     if model_name == 'lasso':
         model = Lasso(alpha=alpha, normalize=True)
     elif model_name == 'ridge':
@@ -206,7 +214,6 @@ def update_graph(dataset, degree, alpha_power, model_name, l2_ratio):
         name='Prediction',
         mode='lines',
     )
-
     trace3 = go.Bar(
         x=[f'x^{p}' for p in range(1, len(coefs) + 1)],
         y=coefs,
@@ -230,8 +237,7 @@ def update_graph(dataset, degree, alpha_power, model_name, l2_ratio):
 
 external_css = [
     "https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css",
-    # Fonts
-    "https://fonts.googleapis.com/css?family=Open+Sans|Roboto",
+    "https://fonts.googleapis.com/css?family=Open+Sans|Roboto",  # Fonts
     "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
     # Base Stylesheet
     "https://cdn.rawgit.com/xhlulu/9a6e89f418ee40d02b637a429a876aa9/raw/base-styles.css",

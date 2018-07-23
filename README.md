@@ -1,31 +1,27 @@
-## Introduction
-`dash-app-template` is a repository created to serve as a guideline of what a Dash app's repository should look like. 
+# Regression Explorer
 
-In this area, include a brief description of what the application does, and include a link to the [Heroku application](https://dash-tsne.plot.ly/). 
+This is a demo of the Dash interactive Python framework developed by [Plotly](https://plot.ly/).
 
-### app_mock.py and app.py
+Dash abstracts away all of the technologies and protocols required to build an interactive web-based application and is a simple and effective way to bind a user interface around your Python code.
 
-Explain why there is two different versions of the app if necessary. E.g. which app is the heroku version, and local version.
+To learn more check out our [documentation](https://plot.ly/dash).
 
-### [Technique/field associated with the instrument]
-Give a brief description of the scientific background related to the application that you're interfacing with.
+You can find the latest [dev version of the app here](https://dash-regression-dev.herokuapp.com/),
+and the [official version here](https://dash-regression.herokuapp.com/).
 
-### dash-core 
-Include a link to [Dash-Core](https://dash.plot.ly/dash-core-components); describe what it is and what it does.
+## Getting Started with the Demo
+This demo lets you interactive explore different linear regression models. [Read more about Linear Models here](http://scikit-learn.org/stable/modules/linear_model.html#linear-model).
 
-## Requirements
-Here you should include details of the Python version required to control your app; any packages; any requirements of the file structure; and the commands to run that will set up your app and get it ready to run.
+The Dataset dropdown lets you select different toy datasets with added noise.
 
-## How to use the app
-Here, you should put the command needed to run your app, and then the steps that the user should take to use it. You should include screenshots of the app running in your own browser to make it easier to follow along. 
+The model dropdown lets you select different types of models. Linear Regression is the regular Least Square model, whereas the other ones are regularized models.
 
-Then, show a step-by-step guide of how your app works, and what each control does.
+The Polynomial Degree slider lets you control how many polynomial degree do you want to use to fit your data. This will create a non-linear regression, at the risk of overfitting.
 
-If possible, include screenshots of something in the app failing, and, if any, the steps that the user can take to correct the error. 
+The Alpha Slider lets you control the regularization term, which penalizes large coefficient terms. This lets you control the variance and bias of your model.
 
-### Controls
-Here, provide a list of all of your controls and a description of what they do.
+L1/L2 ratio is for the Elastic Net model, and control the weight of each norm.
 
 
-## Resources
-If necessary, include resources like documentation for your app, or the pages associated with any external packages used in the project. 
+## How does it work?
+This app is fully written in Dash + scikit-learn. All the components are used as input parameters for scikit-learn or numpy functions, which then generates a model with respect to the parameters you changed. The model is then used to perform predictions that are displayed as a line plot. The combination of those two library lets you quickly write high-level, concise code.
