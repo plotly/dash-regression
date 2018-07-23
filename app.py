@@ -1,4 +1,5 @@
 import os
+from textwrap import dedent
 
 import dash
 import dash_core_components as dcc
@@ -30,12 +31,28 @@ app.layout = html.Div([
     # .container class is fixed, .container.scalable is scalable
     html.Div(className="banner", children=[
         html.Div(className='container scalable', children=[
-            html.H2('Regression Explorer'),
-            html.Img(src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png")
+            html.H2(html.A(
+                'Regression Explorer',
+                href='https://github.com/plotly/dash-regression',
+                style={'text-decoration': 'none', 'color': 'inherit'}
+            )),
+            html.A(
+                html.Img(src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"),
+                href='https://plot.ly/products/dash/'
+            )
         ]),
     ]),
 
     html.Div(id='body', className='container scalable', children=[
+        html.Div(
+            className='row',
+            style={'padding-bottom': '10px'},
+            children=dcc.Markdown(dedent("""
+            [Click here](https://github.com/plotly/dash-regression) to visit 
+            the project repo, and learn about how to use the app.
+            """))
+        ),
+
         html.Div(className='row', children=[
             html.Div(className='four columns', children=drc.NamedDropdown(
                 name='Select Dataset',
@@ -93,7 +110,7 @@ app.layout = html.Div([
                 style={
                     'overflow-x': 'hidden',
                     'overflow-y': 'visible',
-                    'padding-bottom': '30px'
+                    'padding-bottom': '10px'
                 },
                 children=drc.NamedSlider(
                     name='L1/L2 ratio',
@@ -110,7 +127,7 @@ app.layout = html.Div([
         dcc.Graph(
             id='graph-regression-display',
             className='row',
-            style={'height': 'calc(100vh - 205px)'},
+            style={'height': 'calc(100vh - 160px)'},
         ),
     ])
 ])

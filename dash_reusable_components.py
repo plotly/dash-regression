@@ -13,7 +13,7 @@ def _omit(omitted_keys, d):
 
 def NamedSlider(name, **kwargs):
     return html.Div(
-        style={'padding': '20px 10px 25px 4px'},
+        style={'padding': '10px 10px 15px 4px'},
         children=[
             html.P(f'{name}:'),
             html.Div(dcc.Slider(**kwargs), style={'margin-left': '6px'})
@@ -22,10 +22,7 @@ def NamedSlider(name, **kwargs):
 
 
 def NamedDropdown(name, **kwargs):
-    return html.Div(
-        style={'margin': '10px 0px'},
-        children=[
-            html.P(f'{name}:', style={'margin-left': '3px'}),
-            dcc.Dropdown(**kwargs)
-        ]
-    )
+    return html.Div([
+        html.P(f'{name}:', style={'margin-left': '3px'}),
+        dcc.Dropdown(**kwargs)
+    ])
