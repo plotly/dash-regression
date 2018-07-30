@@ -76,10 +76,10 @@ def update_data(clickData, selection, data):
                 data['test_X'].append(selected_X)
                 data['test_y'].append(selected_y)
             elif selection == 'remove':
-                if selected_X in data['train_X'] and selected_y in data['train_y']:
+                while selected_X in data['train_X'] and selected_y in data['train_y']:
                     data['train_X'].remove(selected_X)
                     data['train_y'].remove(selected_y)
-                elif selected_X in data['test_X'] and selected_y in data['test_y']:
+                while selected_X in data['test_X'] and selected_y in data['test_y']:
                     data['test_X'].remove(selected_X)
                     data['test_y'].remove(selected_y)
 
@@ -87,16 +87,14 @@ def update_data(clickData, selection, data):
 
 
 @app.callback(Output('graph', 'figure'),
-              [Input('custom-data-storage', 'children'),
-               Input('graph', 'clickData')],
-              [State('graph', 'figure')])
-def func(custom_data_storage, clickData, figure):
+              [Input('custom-data-storage', 'children')])
+def func(custom_data_storage):
     data = json.loads(custom_data_storage)
 
     trace0 = go.Contour(
-        x=np.linspace(0, 5, 150),
-        y=np.linspace(0, 5, 150),
-        z=np.ones(shape=(150, 150)),
+        x=np.linspace(0, 10, 200),
+        y=np.linspace(0, 10, 200),
+        z=np.ones(shape=(200, 200)),
         showscale=False,
         hoverinfo='none',
         contours=dict(coloring='lines'),
