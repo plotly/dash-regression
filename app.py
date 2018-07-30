@@ -161,6 +161,24 @@ def make_dataset(name, random_state):
                                random_state=random_state)
 
 
+def format_coefs(coefs):
+    coef_string = "yhat = "
+
+    for order, coef in enumerate(coefs):
+        if coef >= 0:
+            sign = ' + '
+        else:
+            sign = ' - '
+        if order == 0:
+            coef_string += f'{coef}'
+        elif order == 1:
+            coef_string += sign + f'{abs(coef):.3f}*x'
+        else:
+            coef_string += sign + f'{abs(coef):.3f}*x^{order}'
+
+    return coef_string
+
+
 @app.callback(Output('slider-alpha', 'disabled'),
               [Input('dropdown-select-model', 'value')])
 def disable_slider_alpha(dataset):
@@ -208,7 +226,6 @@ def update_graph(dataset, degree, alpha_power, model_name, l2_ratio):
     y_pred_range = model.predict(poly_range)
     test_score = model.score(X_test_poly, y_test)
     test_error = mean_squared_error(y_test, model.predict(X_test_poly))
-    coefs = model.coef_[1:]
 
     # Create figure
     trace0 = go.Scatter(
@@ -230,21 +247,12 @@ def update_graph(dataset, degree, alpha_power, model_name, l2_ratio):
         y=y_pred_range,
         name='Prediction',
         mode='lines',
-    )
-    trace3 = go.Bar(
-        x=[f'x^{p}' for p in range(1, len(coefs) + 1)],
-        y=coefs,
-        xaxis='x2',
-        yaxis='y2',
-        name='Coefficients'
+        hovertext=format_coefs(model.coef_)
     )
 
-    data = [trace0, trace1, trace2, trace3]
+    data = [trace0, trace1, trace2]
     layout = go.Layout(
         title=f"Score: {test_score:.3f}, MSE: {test_error:.3f} (Test Data)",
-        xaxis=dict(domain=[0, 0.65]),
-        xaxis2=dict(domain=[0.7, 1]),
-        yaxis2=dict(anchor='x2'),
         legend=dict(orientation='h'),
         margin=dict(l=25, r=25)
     )
