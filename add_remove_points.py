@@ -27,9 +27,26 @@ if 'DYNO' in os.environ:
         'external_url': 'https://cdn.rawgit.com/chriddyp/ca0d8f02a1659981a0ea7f013a378bbd/raw/e79f3f789517deec58f41251f7dbb6bee72c44ab/plotly_ga.js'
     })
 
-app.layout = html.Div([
+app.layout = html.Div(style={'width': '80%'}, children=[
     dcc.Graph(
         id='graph'
+    ),
+
+    drc.NamedDropdown(
+        name='Select Dataset',
+        id='dropdown-dataset',
+        options=[
+            {'label': 'Arctan Curve', 'value': 'tanh'},
+            {'label': 'Boston (LSTAT Attribute)', 'value': 'boston'},
+            {'label': 'Custom Data', 'value': 'custom'},
+            {'label': 'Exponential Curve', 'value': 'exp'},
+            {'label': 'Linear Curve', 'value': 'linear'},
+            {'label': 'Log Curve', 'value': 'log'},
+            {'label': 'Sine Curve', 'value': 'sin'},
+        ],
+        value='linear',
+        clearable=False,
+        searchable=False
     ),
 
     dcc.Dropdown(
@@ -40,7 +57,9 @@ app.layout = html.Div([
             {'label': 'Remove Data point', 'value': 'remove'},
             {'label': 'Do Nothing', 'value': 'nothing'},
         ],
-        value='training'
+        value='training',
+        clearable=False,
+        searchable=False
     ),
 
     html.Div(id='json'),
@@ -54,8 +73,9 @@ app.layout = html.Div([
 @app.callback(Output('custom-data-storage', 'children'),
               [Input('graph', 'clickData')],
               [State('dropdown-custom-selection', 'value'),
-               State('custom-data-storage', 'children')])
-def update_data(clickData, selection, data):
+               State('custom-data-storage', 'children'),
+               State('dropdown-dataset', 'value')])
+def update_data(clickData, selection, data, dataset):
     if data is None:
         data = {
             'train_X': [],
@@ -65,7 +85,7 @@ def update_data(clickData, selection, data):
         }
     else:
         data = json.loads(data)
-        if clickData:
+        if clickData and dataset == 'custom':
             selected_X = clickData['points'][0]['x']
             selected_y = clickData['points'][0]['y']
 

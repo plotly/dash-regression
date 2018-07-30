@@ -60,6 +60,7 @@ app.layout = html.Div([
                 options=[
                     {'label': 'Arctan Curve', 'value': 'tanh'},
                     {'label': 'Boston (LSTAT Attribute)', 'value': 'boston'},
+                    {'label': 'Custom Data', 'value': 'custom'},
                     {'label': 'Exponential Curve', 'value': 'exp'},
                     {'label': 'Linear Curve', 'value': 'linear'},
                     {'label': 'Log Curve', 'value': 'log'},
