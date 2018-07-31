@@ -49,7 +49,7 @@ python app.py
 ```
 
 ## About the app
-## How does it work?
+### How does it work?
 This app is fully written in Dash + scikit-learn. All the components are used as input parameters for scikit-learn or numpy functions, which then generates a model with respect to the parameters you changed. The model is then used to perform predictions that are displayed as a line plot. The combination of those two library lets you quickly write high-level, concise code.
 
 ## Built With
