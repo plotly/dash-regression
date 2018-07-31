@@ -61,7 +61,7 @@ This app is fully written in Dash + scikit-learn. All the components are used as
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 ## Authors
-* **Your Name** - *Your Contribution* - [Your GH profile](https://github.com/profile)
+* **Xing Han Lu** - *Initial Work* - [@xhlulu](https://github.com/xhlulu)
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
