@@ -146,6 +146,15 @@ app.layout = html.Div([
             id='graph-regression-display',
             className='row',
             style={'height': 'calc(100vh - 160px)'},
+            config={'modeBarButtonsToRemove': [
+                'pan2d',
+                'lasso2d',
+                'select2d',
+                'autoScale2d',
+                'hoverClosestCartesian',
+                'hoverCompareCartesian',
+                'toggleSpikelines'
+            ]}
         ),
     ])
 ])
