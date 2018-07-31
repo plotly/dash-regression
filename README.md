@@ -2,14 +2,13 @@
 
 This is a demo of the Dash interactive Python framework developed by [Plotly](https://plot.ly/).
 
-Dash abstracts away all of the technologies and protocols required to build an interactive web-based application and is a simple and effective way to bind a user interface around your Python code.
+Dash abstracts away all of the technologies and protocols required to build an interactive web-based application and is a simple and effective way to bind a user interface around your Python code. To learn more check out our [documentation](https://plot.ly/dash).
 
-To learn more check out our [documentation](https://plot.ly/dash).
+Try out the [demo app here](https://dash-regression.herokuapp.com/).
 
-You can find the latest [dev version of the app here](https://dash-regression-dev.herokuapp.com/),
-and the [official version here](https://dash-regression.herokuapp.com/).
+## Getting Started
 
-## Getting Started with the Demo
+### Using the demo
 This demo lets you interactive explore different linear regression models. [Read more about Linear Models here](http://scikit-learn.org/stable/modules/linear_model.html#linear-model).
 
 The Dataset dropdown lets you select different toy datasets with added noise.
@@ -22,6 +21,30 @@ The Alpha Slider lets you control the regularization term, which penalizes large
 
 L1/L2 ratio is for the Elastic Net model, and control the weight of each norm.
 
+### Running the app locally
+
+First create a virtual environment with conda or venv inside a temp folder, then activate it.
+
+```
+virtualenv dash-regression-venv
+
+# Windows
+dash-regression-venv\Scripts\activate
+# Or Linux
+source venv/bin/activate
+```
+
+Clone the git repo, then install the requirements with pip
+```
+git clone https://github.com/plotly/dash-regression.git
+cd dash-regression
+pip install -r requirements.txt
+```
+
+Run the app
+```
+python app.py
+```
 
 ## How does it work?
 This app is fully written in Dash + scikit-learn. All the components are used as input parameters for scikit-learn or numpy functions, which then generates a model with respect to the parameters you changed. The model is then used to perform predictions that are displayed as a line plot. The combination of those two library lets you quickly write high-level, concise code.
