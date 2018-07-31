@@ -6,6 +6,8 @@ Dash abstracts away all of the technologies and protocols required to build an i
 
 Try out the [demo app here](https://dash-regression.herokuapp.com/).
 
+![animated1](images/animated1.gif)
+
 ## Getting Started
 
 ### Using the demo
@@ -46,8 +48,26 @@ Run the app
 python app.py
 ```
 
+## About the app
 ## How does it work?
 This app is fully written in Dash + scikit-learn. All the components are used as input parameters for scikit-learn or numpy functions, which then generates a model with respect to the parameters you changed. The model is then used to perform predictions that are displayed as a line plot. The combination of those two library lets you quickly write high-level, concise code.
 
+## Built With
+* [Dash](https://dash.plot.ly/) - Main server and interactive components
+* [Plotly Python](https://plot.ly/python/) - Used to create the interactive plots
+* [Scikit-Learn](http://scikit-learn.org/stable/documentation.html) - Run the regression algorithms and generate datasets
+
+## Contributing
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Authors
+* **Your Name** - *Your Contribution* - [Your GH profile](https://github.com/profile)
+
+See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
 ## Screenshots
-![animated1](images/animated1.gif)
