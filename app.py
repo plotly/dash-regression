@@ -1,4 +1,5 @@
 import os
+import json
 from textwrap import dedent
 
 import dash
@@ -11,7 +12,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import LinearRegression, Lasso, Ridge, ElasticNet
 from sklearn.preprocessing import PolynomialFeatures
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 
 import dash_reusable_components as drc
 
@@ -53,6 +54,8 @@ app.layout = html.Div([
             """))
         ),
 
+        html.Div(id='custom-data-storage', style={'display': 'none'}),
+
         html.Div(className='row', children=[
             html.Div(className='four columns', children=drc.NamedDropdown(
                 name='Select Dataset',
@@ -85,6 +88,22 @@ app.layout = html.Div([
                 clearable=False
             )),
 
+            html.Div(className='four columns', children=drc.NamedDropdown(
+                name='Click Mode (Select Custom Data to enable)',
+                id='dropdown-custom-selection',
+                options=[
+                    {'label': 'Add Training Data', 'value': 'training'},
+                    {'label': 'Add Test Data', 'value': 'test'},
+                    {'label': 'Remove Data point', 'value': 'remove'},
+                    {'label': 'Do Nothing', 'value': 'nothing'},
+                ],
+                value='training',
+                clearable=False,
+                searchable=False
+            )),
+        ]),
+
+        html.Div(className='row', children=[
             html.Div(className='four columns', children=drc.NamedSlider(
                 name='Polynomial Degree',
                 id='slider-polynomial-degree',
@@ -94,10 +113,8 @@ app.layout = html.Div([
                 value=1,
                 marks={i: i for i in range(1, 11)},
             )),
-        ]),
 
-        html.Div(className='row', children=[
-            html.Div(className='six columns', children=drc.NamedSlider(
+            html.Div(className='four columns', children=drc.NamedSlider(
                 name='Alpha (Regularization Term)',
                 id='slider-alpha',
                 min=-4,
@@ -107,14 +124,14 @@ app.layout = html.Div([
             )),
 
             html.Div(
-                className='six columns',
+                className='four columns',
                 style={
                     'overflow-x': 'hidden',
                     'overflow-y': 'visible',
                     'padding-bottom': '10px'
                 },
                 children=drc.NamedSlider(
-                    name='L1/L2 ratio',
+                    name='L1/L2 ratio (Select Elastic Net to enable)',
                     id='slider-l1-l2-ratio',
                     min=0,
                     max=1,
@@ -182,14 +199,55 @@ def format_coefs(coefs):
 
 @app.callback(Output('slider-alpha', 'disabled'),
               [Input('dropdown-select-model', 'value')])
-def disable_slider_alpha(dataset):
-    return dataset not in ['lasso', 'ridge', 'elastic_net']
+def disable_slider_alpha(model):
+    return model not in ['lasso', 'ridge', 'elastic_net']
 
 
 @app.callback(Output('slider-l1-l2-ratio', 'disabled'),
               [Input('dropdown-select-model', 'value')])
-def disable_dropdown_select_model(dataset):
-    return dataset not in ['elastic_net']
+def disable_dropdown_select_model(model):
+    return model not in ['elastic_net']
+
+
+@app.callback(Output('dropdown-custom-selection', 'disabled'),
+              [Input('dropdown-dataset', 'value')])
+def disable_custom_selection(dataset):
+    return dataset != 'custom'
+
+@app.callback(Output('custom-data-storage', 'children'),
+              [Input('graph-regression-display', 'clickData')],
+              [State('dropdown-custom-selection', 'value'),
+               State('custom-data-storage', 'children'),
+               State('dropdown-dataset', 'value')])
+def update_custom_storage(clickData, selection, data, dataset):
+    if data is None:
+        data = {
+            'train_X': [1, 2],
+            'train_y': [1, 2],
+            'test_X': [3, 4],
+            'test_y': [3, 4],
+        }
+    else:
+        data = json.loads(data)
+        if clickData and dataset == 'custom':
+            selected_X = clickData['points'][0]['x']
+            selected_y = clickData['points'][0]['y']
+
+            if selection == 'training':
+                data['train_X'].append(selected_X)
+                data['train_y'].append(selected_y)
+            elif selection == 'test':
+                data['test_X'].append(selected_X)
+                data['test_y'].append(selected_y)
+            elif selection == 'remove':
+                while selected_X in data['train_X'] and selected_y in data['train_y']:
+                    data['train_X'].remove(selected_X)
+                    data['train_y'].remove(selected_y)
+                while selected_X in data['test_X'] and selected_y in data['test_y']:
+                    data['test_X'].remove(selected_X)
+                    data['test_y'].remove(selected_y)
+
+    return json.dumps(data)
 
 
 @app.callback(Output('graph-regression-display', 'figure'),
@@ -197,13 +255,36 @@ def disable_dropdown_select_model(dataset):
                Input('slider-polynomial-degree', 'value'),
                Input('slider-alpha', 'value'),
                Input('dropdown-select-model', 'value'),
-               Input('slider-l1-l2-ratio', 'value')])
-def update_graph(dataset, degree, alpha_power, model_name, l2_ratio):
+               Input('slider-l1-l2-ratio', 'value'),
+               Input('custom-data-storage', 'children')])
+def update_graph(dataset, degree, alpha_power, model_name, l2_ratio, custom_data):
     # Generate base data
-    X, y = make_dataset(dataset, RANDOM_STATE)
-    X_train, X_test, y_train, y_test = \
-        train_test_split(X, y, test_size=100, random_state=RANDOM_STATE)
-    X_range = np.linspace(X.min() - 0.5, X.max() + 0.5, 300).reshape(-1, 1)
+    if dataset == 'custom':
+        custom_data = json.loads(custom_data)
+        X_train = np.array(custom_data['train_X']).reshape(-1, 1)
+        y_train = np.array(custom_data['train_y'])
+        X_test = np.array(custom_data['test_X']).reshape(-1, 1)
+        y_test = np.array(custom_data['test_y'])
+        X_range = np.linspace(-5, 5, 300).reshape(-1, 1)
+        X = np.concatenate((X_train, X_test))
+
+        trace_contour = go.Contour(
+            x=np.linspace(-5, 5, 300),
+            y=np.linspace(-5, 5, 300),
+            z=np.ones(shape=(300, 300)),
+            showscale=False,
+            hoverinfo='none',
+            contours=dict(coloring='lines'),
+        )
+    else:
+        X, y = make_dataset(dataset, RANDOM_STATE)
+        X_train, X_test, y_train, y_test = \
+            train_test_split(X, y, test_size=100, random_state=RANDOM_STATE)
+
+        X_range = np.linspace(X.min() - 0.5, X.max() + 0.5, 300).reshape(-1, 1)
+
+    # print(X_train.shape, y_train.shape)
+    # print(X_test.shape, y_test.shape)
 
     # Create Polynomial Features
     poly = PolynomialFeatures(degree=degree)
@@ -250,12 +331,15 @@ def update_graph(dataset, degree, alpha_power, model_name, l2_ratio):
         mode='lines',
         hovertext=format_coefs(model.coef_)
     )
-
     data = [trace0, trace1, trace2]
+    if dataset == 'custom':
+        data.insert(0, trace_contour)
+
     layout = go.Layout(
         title=f"Score: {test_score:.3f}, MSE: {test_error:.3f} (Test Data)",
         legend=dict(orientation='h'),
-        margin=dict(l=25, r=25)
+        margin=dict(l=25, r=25),
+        hovermode='closest'
     )
 
     return go.Figure(data=data, layout=layout)

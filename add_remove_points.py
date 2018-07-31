@@ -75,7 +75,7 @@ app.layout = html.Div(style={'width': '80%'}, children=[
               [State('dropdown-custom-selection', 'value'),
                State('custom-data-storage', 'children'),
                State('dropdown-dataset', 'value')])
-def update_data(clickData, selection, data, dataset):
+def update_custom_storage(clickData, selection, data, dataset):
     if data is None:
         data = {
             'train_X': [],
