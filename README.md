@@ -13,15 +13,15 @@ Try out the [demo app here](https://dash-regression.herokuapp.com/).
 ### Using the demo
 This demo lets you interactive explore different linear regression models. [Read more about Linear Models here](http://scikit-learn.org/stable/modules/linear_model.html#linear-model).
 
-The Dataset dropdown lets you select different toy datasets with added noise.
+The **Select Dataset** dropdown lets you select different toy datasets with added noise. To add custom data, select the "Custom Data" option from the drodpwon and start clicking on the graph to add them. You can also choose to add training data, test data, or remove points using the Click Mode dropdown.
 
-The model dropdown lets you select different types of models. Linear Regression is the regular Least Square model, whereas the other ones are regularized models.
+The **Select Model** dropdown lets you select different types of models. Linear Regression is the regular Least Square model, whereas the other ones are regularized models.
 
-The Polynomial Degree slider lets you control how many polynomial degree do you want to use to fit your data. This will create a non-linear regression, at the risk of overfitting.
+The **Polynomial Degree** slider lets you control how many polynomial degree do you want to use to fit your data. This will create a non-linear regression, at the risk of overfitting.
 
-The Alpha Slider lets you control the regularization term, which penalizes large coefficient terms. This lets you control the variance and bias of your model.
+The **Alpha** Slider lets you control the regularization term, which penalizes large coefficient terms. This lets you control the variance and bias of your model.
 
-L1/L2 ratio is for the Elastic Net model, and control the weight of each norm.
+**L1/L2 ratio** is for the Elastic Net model, and control the weight of each norm.
 
 ### Running the app locally
 
