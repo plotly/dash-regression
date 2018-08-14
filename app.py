@@ -361,7 +361,7 @@ external_css = [
     # Base Stylesheet
     "https://cdn.rawgit.com/xhlulu/9a6e89f418ee40d02b637a429a876aa9/raw/base-styles.css",
     # Custom Stylesheet
-    "https://cdn.rawgit.com/xhlulu/638e683e245ea751bca62fd427e385ab/raw/fab9c525a4de5b2eea2a2b292943d455ade44edd/custom-styles.css"
+    "https://cdn.rawgit.com/plotly/dash-regression/98b5a541/custom-styles.css"
 ]
 
 for css in external_css:
