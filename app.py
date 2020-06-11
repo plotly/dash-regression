@@ -18,7 +18,8 @@ import dash_reusable_components as drc
 
 RANDOM_STATE = 718
 
-app = dash.Dash(__name__)
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 # Custom Script for Heroku
@@ -32,16 +33,16 @@ app.layout = html.Div([
     # .container class is fixed, .container.scalable is scalable
     html.Div(className="banner", children=[
         html.Div(className='container scalable', children=[
+            html.A(
+                html.Img(src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"),
+                href='https://plot.ly/products/dash/'
+            ),
             html.H2(html.A(
                 'Regression Explorer',
                 href='https://github.com/plotly/dash-regression',
                 style={'text-decoration': 'none', 'color': 'inherit'}
             )),
-            html.A(
-                html.Img(src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"),
-                href='https://plot.ly/products/dash/'
-            )
-        ]),
+        ], style={"display": "flex"}),
     ]),
 
     html.Div(id='body', className='container scalable', children=[
@@ -49,7 +50,7 @@ app.layout = html.Div([
             className='row',
             style={'padding-bottom': '10px'},
             children=dcc.Markdown(dedent("""
-            [Click here](https://github.com/plotly/dash-regression) to visit 
+            [Click here](https://github.com/plotly/dash-regression) to visit
             the project repo, and learn about how to use the app.
             """))
         ),
@@ -111,7 +112,7 @@ app.layout = html.Div([
                 max=10,
                 step=1,
                 value=1,
-                marks={i: i for i in range(1, 11)},
+                marks={i: str(i) for i in range(1, 11)},
             )),
 
             html.Div(className='four columns', children=drc.NamedSlider(
